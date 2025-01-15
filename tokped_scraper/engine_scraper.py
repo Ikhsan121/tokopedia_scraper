@@ -158,6 +158,7 @@ def get_all_fields(html_content, link):
     data['url'] = link
     data['store location'] = store_location
 
+
     print('title: ', title)
     print('shop name: ', shop_name)
     print('rating: ', rating)
