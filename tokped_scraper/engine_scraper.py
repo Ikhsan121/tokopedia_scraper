@@ -121,7 +121,7 @@ def browser_context(max_page=config.MAX_PAGE, keyword=config.KEYWORD):
             final_data.append(get_all_fields(html_content, product_item))
             # Convert to a DataFrame and save to CSV
             df = pd.DataFrame(final_data)
-            df.to_csv("data.csv", index=False)
+            df.to_csv(f"{keyword}.csv", index=False)
 
             print("CSV file created using Pandas!")
 
@@ -141,13 +141,15 @@ def get_all_fields(html_content, link):
         rating_counter = ''
     price = soup.find('div', {'data-testid':'lblPDPDetailProductPrice'}).text
     try:
-        sold = soup.find('p', {'data-testid':'lblPDPDetailProductSoldCounter'}).text.replace("Terjual", "").replace('rb+', "000").replace(" ", "")
+        sold = soup.find('p', {'data-testid':'lblPDPDetailProductSoldCounter'}).text.replace("Terjual", "").replace('rb+', "000").replace(" ", "").replace("+", "").replace("barangberhasilterjual", '')
     except AttributeError:
         sold = ''
     description = soup.find('div', {'data-testid':'lblPDPDescriptionProduk'}).text.strip().replace("\n", " ")
     shop_name = soup.find('a', {'data-testid': 'llbPDPFooterShopName'}).text
-    store_location = soup.find('h2', class_='css-1pd07ge-unf-heading e1qvo2ff2').text.replace('Dikirim dari', '').strip()
-
+    try:
+        store_location = soup.find('h2', class_='css-1pd07ge-unf-heading e1qvo2ff2').text.replace('Dikirim dari', '').strip()
+    except AttributeError:
+        store_location = ''
     data['title'] = title
     data['rating'] = rating
     data['price'] = price

@@ -1,2 +1,2 @@
-MAX_PAGE = 10
-KEYWORD = 'iphone'
+MAX_PAGE = 5
+KEYWORD = 'mouse'
