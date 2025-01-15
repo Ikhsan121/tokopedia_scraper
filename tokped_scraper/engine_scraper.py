@@ -146,6 +146,8 @@ def get_all_fields(html_content, link):
         sold = ''
     description = soup.find('div', {'data-testid':'lblPDPDescriptionProduk'}).text.strip().replace("\n", " ")
     shop_name = soup.find('a', {'data-testid': 'llbPDPFooterShopName'}).text
+    store_location = soup.find('h2', class_='css-1pd07ge-unf-heading e1qvo2ff2').text.replace('Dikirim dari', '').strip()
+
     data['title'] = title
     data['rating'] = rating
     data['price'] = price
@@ -154,6 +156,7 @@ def get_all_fields(html_content, link):
     data['description'] = description
     data['shop name'] = shop_name
     data['url'] = link
+    data['store location'] = store_location
 
     print('title: ', title)
     print('shop name: ', shop_name)
@@ -162,6 +165,7 @@ def get_all_fields(html_content, link):
     print('price: ', price)
     print('sold: ', sold)
     print('description: ', description)
+    print('send from: ', store_location)
     return data
 
 
