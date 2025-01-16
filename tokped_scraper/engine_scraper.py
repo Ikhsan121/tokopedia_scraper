@@ -105,17 +105,24 @@ def browser_context(max_page=config.MAX_PAGE, keyword=config.KEYWORD):
             links = get_all_links(html_content)
             for link in links:
                 adv_links.append(link)
-
+        print('total item: ', len(adv_links))
         # go to each product page
         final_data = []
+        i = 0
         for product_item in adv_links:
+            i += 1
             page.goto(product_item)
             print("link: ", product_item)
+            print('item number: ', i)
+            page.set_default_navigation_timeout(60000)  # Set navigation timeout
 
             # scraping process
-            page.wait_for_selector('h1[data-expanded="false"][data-testid="lblPDPDetailProductName"]', state="visible") # wait for title element to be visible
-            page.wait_for_selector('div[class="items"]', state="attached")
-            page.wait_for_selector('div[data-testid="lblPDPDescriptionProduk"]', state="visible")
+            try:
+                page.locator('[data-testid="lblPDPDetailProductRatingNumber"]').wait_for(state='visible')
+                page.locator('[data-testid="llbPDPFooterShopName"]').wait_for(state='visible')
+                page.locator('[data-testid="lblPDPDetailProductSoldCounter"]').wait_for(state='visible')
+            except TimeoutError:
+                print('time out error')
 
             html_content = page.content()
             final_data.append(get_all_fields(html_content, product_item))
@@ -129,7 +136,10 @@ def browser_context(max_page=config.MAX_PAGE, keyword=config.KEYWORD):
 def get_all_fields(html_content, link):
     data = {}
     soup = BeautifulSoup(html_content, 'html.parser')
-    title = soup.find('h1', {'data-testid':'lblPDPDetailProductName'}).text
+    try:
+        title = soup.find('h1', {'data-testid':'lblPDPDetailProductName'}).text
+    except AttributeError:
+        title = ''
     try:
         rating = soup.find('span', {'data-testid':'lblPDPDetailProductRatingNumber'}).text
     except AttributeError:
@@ -145,7 +155,10 @@ def get_all_fields(html_content, link):
     except AttributeError:
         sold = ''
     description = soup.find('div', {'data-testid':'lblPDPDescriptionProduk'}).text.strip().replace("\n", " ")
-    shop_name = soup.find('a', {'data-testid': 'llbPDPFooterShopName'}).text
+    try:
+        shop_name = soup.find('a', {'data-testid': 'llbPDPFooterShopName'}).text
+    except AttributeError:
+        shop_name=''
     try:
         store_location = soup.find('h2', class_='css-1pd07ge-unf-heading e1qvo2ff2').text.replace('Dikirim dari', '').strip()
     except AttributeError:
